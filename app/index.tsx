@@ -1,5 +1,5 @@
 import { CameraView, useCameraPermissions } from 'expo-camera'
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Image, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native'
 import { useRef, useState } from 'react'
 
 import { getUrl } from '@/lib/url'
@@ -33,39 +33,25 @@ export default function App() {
     }
 
     async function sendImage() {
-        // const body = new FormData()
-        // body.append('image', { uri: image, name: 'photo.jpg', type: 'image/jpeg' })
-        // body.append('Content-Type', 'image/jpeg')
+        const body = new FormData()
+        // @ts-ignore
+        body.append('image', { uri: Platform.OS === 'ios' ? image.replace('file://', '') : image, name: 'photo.jpg', type: 'image/jpeg' })
 
         try {
-            // const data = await fetch('http://10.0.2.2:8000')
-            // const data = await fetch(await getUrl())
-            // const data = await fetch('https://drury.edu')
-            const data = await fetch('https://mcs.drury.edu/mirror/user', { method: 'POST', headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                }, })
+            const url = await getUrl()
+
+            const data = await fetch(url + '/image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body,
+            })
+
             console.log(data)
-            console.log(await data.json())
         } catch (e) {
             console.log(e)
         }
-
-        // try {
-        //     const url = await getUrl()
-        //
-        //     const data = await fetch(url + '/image', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'multipart/form-data',
-        //         },
-        //         body,
-        //     })
-        //
-        //     console.log(await data.json())
-        // } catch (e) {
-        //     console.log(e)
-        // }
     }
 
     async function resetImage() {
