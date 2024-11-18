@@ -48,6 +48,12 @@
         "projectId": "8e956329-748b-43ec-85e3-dbc6dd7c82de"
       }
     },
-    "owner": "braydenoneal"
+    "owner": "braydenoneal",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8e956329-748b-43ec-85e3-dbc6dd7c82de"
+    }
   }
 }
