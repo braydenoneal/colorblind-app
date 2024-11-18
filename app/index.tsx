@@ -1,5 +1,5 @@
 import { CameraView, useCameraPermissions } from 'expo-camera'
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native'
+import { Button, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useRef, useState } from 'react'
 
 import { getUrl } from '@/lib/url'
@@ -35,12 +35,16 @@ export default function App() {
     async function sendImage() {
         const body = new FormData()
         // @ts-ignore
-        body.append('image', { uri: Platform.OS === 'ios' ? image.replace('file://', '') : image, name: 'photo.jpg', type: 'image/jpeg' })
+        body.append('image', {
+            uri: Platform.OS === 'ios' ? image?.replace('file://', '') : image,
+            name: 'photo.jpg',
+            type: 'image/jpeg',
+        })
 
         try {
             const url = await getUrl()
 
-            const data = await fetch(url + '/image', {
+            const response = await fetch(url + '/image', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -48,7 +52,17 @@ export default function App() {
                 body,
             })
 
-            console.log(data)
+            if (response.ok) {
+                const image = await response.blob()
+
+                const fileReaderInstance = new FileReader()
+                fileReaderInstance.readAsDataURL(image)
+
+                fileReaderInstance.onload = () => {
+                    const vtt_data = fileReaderInstance.result
+                    setImage(vtt_data?.toString())
+                }
+            }
         } catch (e) {
             console.log(e)
         }
